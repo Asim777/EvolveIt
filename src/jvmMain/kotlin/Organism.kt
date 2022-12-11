@@ -4,7 +4,7 @@ class Organism(
     val id: Int,
     val genes: Array<Array<Int>>,
     val color: Color,
-    var cellNumber: Int,
+    var coordinates: Coordinate,
     var age: Short,
     var energy: Byte,
     var hunger: Byte,

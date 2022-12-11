@@ -1,9 +1,12 @@
 class Cell(
-    val cellId: Int,
-    val coordinates: Pair<Int, Int>,
+    val coordinates: Coordinate,
     val type: CellType,
 )
 
+class Coordinate(
+    val x: Int,
+    val y: Int
+)
 enum class CellType {
     Land, Water, Rock
 }

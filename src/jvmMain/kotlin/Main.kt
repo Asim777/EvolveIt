@@ -1,9 +1,9 @@
-// Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -11,7 +11,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import kotlinx.coroutines.*
 import java.awt.Dimension
+import java.util.concurrent.TimeUnit
 
 @Composable
 @Preview
@@ -48,22 +50,21 @@ fun CellUi(
     cell: Cell,
     worldSize: Int
 ) {
-    val shouldShowVerticalBorder = (cell.cellId+1)%(worldSize/10)==0
-    val shouldShowHorizontalBorder = cell.cellId > (worldSize-1) && cell.cellId%(worldSize*worldSize/10)<worldSize
-
+    val shouldShowVerticalBorder = cell.coordinates.x % (worldSize / 10) == 0
+    val shouldShowHorizontalBorder = cell.coordinates.y % (worldSize / 10) == 0
     Box(
         modifier = Modifier
             .size(size.dp)
             .background(
                 when (cell.type) {
-                    CellType.Land ->  Color(0xffa5d6a7)
+                    CellType.Land -> Color(0xffa5d6a7)
                     CellType.Water -> Color.Blue
                     CellType.Rock -> Color.DarkGray
                 }
             )
             .border(
-                bottom = Border(if(shouldShowHorizontalBorder) 1.dp else 0.dp, Color(0xff43a047)),
-                end = Border(if(shouldShowVerticalBorder) 1.dp else 0.dp, Color(0xff43a047))
+                top = Border(if (shouldShowHorizontalBorder) 1.dp else 0.dp, Color(0xff43a047)),
+                start = Border(if (shouldShowVerticalBorder) 1.dp else 0.dp, Color(0xff43a047))
             )
     )
 }
@@ -72,7 +73,7 @@ fun CellUi(
 @Preview
 fun OrganismsLayer(
     worldParams: WorldParams,
-    organisms: List<Organism>
+    organisms: SnapshotStateList<Organism>
 ) {
     val windowSize = 800f
     val cellSize = windowSize / worldParams.worldSize
@@ -82,8 +83,7 @@ fun OrganismsLayer(
             OrganismUi(
                 organism = organisms[organism.id],
                 size = windowSize / worldParams.worldSize,
-                coordinates = (organism.cellNumber % worldParams.worldSize) * cellSize
-                        to organism.cellNumber / worldParams.worldSize * cellSize
+                coordinates = (organism.coordinates.x) * cellSize to organism.coordinates.y * cellSize
             )
         }
     }
@@ -102,7 +102,7 @@ fun OrganismUi(
             .offset(x = coordinates.first.dp, y = coordinates.second.dp)
     ) {
         drawCircle(
-            radius = size/2.5.toFloat(),
+            radius = size / 2.5.toFloat(),
             color = organism.color,
         )
     }
@@ -114,7 +114,7 @@ fun App() {
     val worldParams = getDefaultWorldParams()
     var buttonText by remember { mutableStateOf("Run") }
     val cells = remember { mutableStateOf(mutableListOf<Cell>()) }
-    val organisms = remember { mutableStateOf(mutableListOf<Organism>()) }
+    val organisms = remember { mutableStateListOf<Organism>() }
     val generation = remember { mutableStateOf(0) }
 
     for (i in 0..worldParams.worldSize * worldParams.worldSize) {
@@ -122,8 +122,7 @@ fun App() {
         val yCoordinate = i / worldParams.worldSize
         cells.value.add(
             Cell(
-                cellId = i,
-                coordinates = xCoordinate to yCoordinate,
+                coordinates = Coordinate(x = xCoordinate, y = yCoordinate),
                 type = CellType.Land
             )
         )
@@ -136,7 +135,7 @@ fun App() {
             id = i,
             genes = arrayOf(arrayOf(1, 2, 3), arrayOf(4, 5, 6)),
             color = Color.Red,
-            cellNumber = initialPopulatedCells[i],
+            coordinates = cells.value[initialPopulatedCells[i]].coordinates,
             age = 1,
             energy = 100,
             hunger = 0,
@@ -144,7 +143,7 @@ fun App() {
             hornyness = 0,
             sleepiness = 0
         )
-        organisms.value.add(organism)
+        organisms.add(organism)
     }
 
     ContextMenuArea(
@@ -175,12 +174,26 @@ fun App() {
                         )
                         OrganismsLayer(
                             worldParams = worldParams,
-                            organisms = organisms.value
+                            organisms = organisms
                         )
                     }
                     Button(
+                        modifier = Modifier.padding(top = 16.dp),
                         onClick = {
-                            buttonText = if (buttonText == "Run") "Stop" else "Run"
+                            if (buttonText == "Run") {
+                                buttonText = "Stop"
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    repeat(5) {
+                                        runOneStep(organisms, worldParams.worldSize)
+                                        delay(TimeUnit.SECONDS.toMillis(1))
+                                    }
+                                }
+                                buttonText = "Run"
+                            } else {
+                                buttonText = "Run"
+                                stopSimulation()
+                            }
                         }
                     ) {
                         Text(buttonText)
@@ -194,14 +207,82 @@ fun App() {
                         Text("Generation:")
                         Text(generation.value.toString())
                     }
-                    Row {
-                        Text("Cell id of organism:")
-                        Text(organisms.value.first().cellNumber.toString())
-                    }
                 }
             }
         }
     }
+}
+
+fun runOneStep(organisms: SnapshotStateList<Organism>, worldSize: Int) {
+    val updatedOrganisms = organisms.toTypedArray()
+    // icOccupied contains array of arrays of booleans, where first level represents rows, and second level represents
+    // cells and their boolean values represent whether the cell is occupied or not
+    val isOccupied = Array(worldSize) { Array(worldSize) { false } }
+
+    organisms.forEach { organism ->
+        isOccupied[organism.coordinates.x][organism.coordinates.y] = true
+    }
+
+    updatedOrganisms.forEach { organism ->
+        moveToRandomDirection(organism, worldSize, isOccupied)
+    }
+    organisms.clear()
+    organisms.addAll(updatedOrganisms)
+}
+
+fun moveToRandomDirection(
+    organism: Organism,
+    worldSize: Int,
+    isOccupied: Array<Array<Boolean>>,
+    allowedDirections: List<MovementDirection> = listOf(
+        MovementDirection.NotMove,
+        MovementDirection.North,
+        MovementDirection.NorthEast,
+        MovementDirection.SouthEast,
+        MovementDirection.South,
+        MovementDirection.SouthWest,
+        MovementDirection.West,
+        MovementDirection.NorthWest
+    )
+) {
+    fun move(newCoordinates: Coordinate) {
+        if (newCoordinates != organism.coordinates) {
+            if (isWithinWorldBoundaries(newCoordinates, worldSize) && !isOccupied[newCoordinates.x][newCoordinates.y]) {
+                isOccupied[organism.coordinates.x][organism.coordinates.y] = false
+                println("Organism ${organism.id} moved from ${organism.coordinates.x} ${organism.coordinates.y} to ${newCoordinates.x} ${newCoordinates.y}")
+                organism.coordinates = newCoordinates
+                isOccupied[newCoordinates.x][newCoordinates.y] = true
+            } else {
+                moveToRandomDirection(
+                    organism,
+                    worldSize,
+                    isOccupied,
+                    allowedDirections.filter { it != MovementDirection.North })
+            }
+        } else {
+            println("Organism ${organism.id} stayed in place in coordinates ${organism.coordinates.x} ${organism.coordinates.y}")
+        }
+    }
+
+    val newCoordinates = when (allowedDirections.toList().shuffled().first()) {
+        MovementDirection.NotMove -> organism.coordinates
+        MovementDirection.North -> Coordinate(organism.coordinates.x, organism.coordinates.y - 1)
+        MovementDirection.NorthEast -> Coordinate(organism.coordinates.x+1, organism.coordinates.y - 1)
+        MovementDirection.East -> Coordinate(organism.coordinates.x+1, organism.coordinates.y)
+        MovementDirection.SouthEast -> Coordinate(organism.coordinates.x+1, organism.coordinates.y+1)
+        MovementDirection.South -> Coordinate(organism.coordinates.x, organism.coordinates.y+1)
+        MovementDirection.SouthWest ->Coordinate(organism.coordinates.x-1, organism.coordinates.y+1)
+        MovementDirection.West -> Coordinate(organism.coordinates.x-1, organism.coordinates.y)
+        MovementDirection.NorthWest -> Coordinate(organism.coordinates.x-1, organism.coordinates.y-1)
+    }
+    move(newCoordinates)
+}
+
+fun isWithinWorldBoundaries(coordinates: Coordinate, worldSize: Int) =
+    coordinates.x in 0 until worldSize && coordinates.y in 0 until worldSize
+
+fun stopSimulation() {
+
 }
 
 fun main() = application {
@@ -240,12 +321,24 @@ fun main() = application {
 }
 
 fun getDefaultWorldParams() = WorldParams(
-    worldSize = 200,
+    worldSize = 100,
     initialPopulation = 200,
     genomeMaxLength = 2,
     maxNumberOfNeurons = 10,
     mutationRate = 0.01f
 )
+
+enum class MovementDirection {
+    NotMove,
+    North,
+    NorthEast,
+    East,
+    SouthEast,
+    South,
+    SouthWest,
+    West,
+    NorthWest;
+}
 
 //            Column {
 //
