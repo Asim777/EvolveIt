@@ -1,7 +1,7 @@
 open class WorldParams(
-    val worldSize: Int,
-    val initialPopulation: Int,
-    val genomeMaxLength: Int,
-    val maxNumberOfNeurons: Int,
-    val mutationRate: Float
+    var worldSize: Int,
+    var initialPopulation: Int,
+    var genomeMaxLength: Int,
+    var maxNumberOfNeurons: Int,
+    var mutationRate: Float
 )
