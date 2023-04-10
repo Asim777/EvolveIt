@@ -5,11 +5,10 @@ import kotlin.math.pow
 class Simulation(private val worldParams: WorldParams) {
 
     private var randomNumberCursorPosition = 0
-    private val randomBytesString by lazy {
-        object {}.javaClass.getResource("random/1")?.readText()
-    }
+    private var currentRandomBitsFileNumber = 0
+    private var randomBytesString = object {}.javaClass.getResource("random/1")?.readText()
     private val world = hashMapOf<Int, HashMap<Int, Cell>>()
-    private val genePool = arrayOf<Array<Gene>>()
+    private val genePool = mutableListOf<Array<Gene>>()
     private val entities = arrayOf<Entity>()
 
     fun setup() {
@@ -31,7 +30,7 @@ class Simulation(private val worldParams: WorldParams) {
 
         createInitialGenePool()
         createEntities()
-
+        println("Finished")
     }
 
     private fun createInitialGenePool() {
@@ -42,22 +41,24 @@ class Simulation(private val worldParams: WorldParams) {
 
         // Create Gene pool
         for (i in 0 until worldParams.initialPopulation) {
-            val genome = arrayOf<Gene>()
+            val genome = mutableListOf<Gene>()
             for (j in 0 until worldParams.genomeLength) {
                 // Create a gene and assign to the genome
-                genome[j] = Gene(
-                    input = sensorNeurons.plus(innerNeurons).run {
-                        get(getRandomNumber(size))
-                    },
-                    output = innerNeurons.plus(sinkNeurons).run {
-                        get(getRandomNumber(size))
-                    },
-                    weight = getRandomFloat(2)
+                genome.add(
+                    j, Gene(
+                        input = sensorNeurons.plus(innerNeurons).run {
+                            get(getRandomNumber(size))
+                        },
+                        output = innerNeurons.plus(sinkNeurons).run {
+                            get(getRandomNumber(size))
+                        },
+                        weight = getRandomFloat(2)
+                    )
                 )
             }
 
             // Assign the genome to the Gene pool
-            genePool[i] = genome
+            genePool.add(i, genome.toTypedArray())
         }
     }
 
@@ -105,7 +106,7 @@ class Simulation(private val worldParams: WorldParams) {
     /**
      * Generate a random number in range of [0, max]
      *
-     * @param max number to apply as an exclusive upper limit to the range of random numbers
+     * @param max positive integer to apply as an exclusive upper limit to the range of random numbers
      * @return generated Int value
      */
     private fun getRandomNumber(max: Int): Int {
@@ -116,14 +117,25 @@ class Simulation(private val worldParams: WorldParams) {
             randomBytesString?.substring(randomNumberCursorPosition, randomNumberCursorPosition + minNumberOfBits)
         // Update cursor position so that the next time this method is called, it fetches unused bits from the file
         randomNumberCursorPosition += minNumberOfBits
-        // Convert selected random bits to an integer and return it
-        randomBits?.let {
+
+        // Convert selected random bits to an integer
+        var randomNumber = randomBits?.let {
             runCatching {
-                return randomBits.toInt(2)
+                randomBits.toInt(2)
             }.getOrElse {
                 throw IllegalStateException("Failed to convert bits string into integer")
             }
         } ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
+
+        // Random number picked from minNumberOfBits can be bigger than our maximum. We need to scale it down
+        // For that, we check if randomNumber is bigger or equal to max, and if yes
+        // we calculate the maximum number that can be represented with minNumberOfBits, and we multiply randomNumber by
+        // the quotient of max to maxNumberWithMinBits
+        if (randomNumber >= max) {
+            val maxNumberWithMinBits = (2.0.pow(minNumberOfBits) - 1).toInt()
+            randomNumber = (randomNumber * max.toFloat() / maxNumberWithMinBits).toInt() - 1
+        }
+        return randomNumber
     }
 
     /**
@@ -134,20 +146,35 @@ class Simulation(private val worldParams: WorldParams) {
      */
     private fun getRandomFloat(decimalPoints: Int): Float {
         // Calculate a minimum number of bits needed to represent the float number with given decimal points
-        val minNumberOfBits = 10.0.pow(decimalPoints).toInt()
+        val minNumberOfBits = Integer.toBinaryString(10.0.pow(decimalPoints).toInt()).length
+        val endIndex = randomNumberCursorPosition + minNumberOfBits
         // Get minNumberOfBits bits from a file starting at randomNumberCursorPosition
+        randomBytesString?.let { randomBytesString ->
+            if (endIndex >= randomBytesString.length) {
+                this.randomBytesString = object {}.javaClass.getResource("random/${++currentRandomBitsFileNumber}")?.readText()
+            }
+            return getRandomFloatValue(randomBytesString, minNumberOfBits)
+        } ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
+    }
+
+    private fun getRandomFloatValue(randomBytesString: String, minNumberOfBits: Int): Float {
         val randomBits =
-            randomBytesString?.substring(randomNumberCursorPosition, randomNumberCursorPosition + minNumberOfBits)
+            runCatching {
+                randomBytesString.substring(
+                    randomNumberCursorPosition,
+                    randomNumberCursorPosition + minNumberOfBits
+                )
+            }.getOrElse {
+                throw IllegalStateException("Ran out of random bits in a file")
+            }
         // Update cursor position so that the next time this method is called, it fetches unused bits from the file
         randomNumberCursorPosition += minNumberOfBits
         // Convert selected random bits to an integer and return it
-        randomBits?.let {
-            runCatching {
-                return randomBits.toInt(2).toFloat() / 100
-            }.getOrElse {
-                throw IllegalStateException("Failed to convert bits string into integer")
-            }
-        } ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
+        runCatching {
+            return randomBits.toInt(2).toFloat() / 100
+        }.getOrElse {
+            throw IllegalStateException("Failed to convert bits string into integer")
+        }
     }
 }
 
