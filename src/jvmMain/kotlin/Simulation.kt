@@ -6,10 +6,10 @@ class Simulation(private val worldParams: WorldParams) {
 
     private var randomNumberCursorPosition = 0
     private var currentRandomBitsFileNumber = 0
-    private var randomBytesString = object {}.javaClass.getResource("random/1")?.readText()
+    private var randomBitsString = object {}.javaClass.getResource("random/0")?.readText()
     private val world = hashMapOf<Int, HashMap<Int, Cell>>()
     private val genePool = mutableListOf<Array<Gene>>()
-    private val entities = arrayOf<Entity>()
+    private val entities = mutableListOf<Entity>()
 
     fun setup() {
         // Create the World
@@ -30,7 +30,7 @@ class Simulation(private val worldParams: WorldParams) {
 
         createInitialGenePool()
         createEntities()
-        println("Finished")
+        println("Setup Finished")
     }
 
     private fun createInitialGenePool() {
@@ -47,10 +47,10 @@ class Simulation(private val worldParams: WorldParams) {
                 genome.add(
                     j, Gene(
                         input = sensorNeurons.plus(innerNeurons).run {
-                            get(getRandomNumber(size))
+                            get(getRandomInteger(size))
                         },
                         output = innerNeurons.plus(sinkNeurons).run {
-                            get(getRandomNumber(size))
+                            get(getRandomInteger(size))
                         },
                         weight = getRandomFloat(2)
                     )
@@ -65,41 +65,34 @@ class Simulation(private val worldParams: WorldParams) {
     private fun createEntities() {
         for (i in 0 until worldParams.initialPopulation) {
             val genome = genePool[i]
-            Entity(
-                id = i,
-                genome = genome,
-                color = genome.generateColor(),
-                coordinates = getRandomCoordinate(),
-                age = 0,
-                energy = 100,
-                hunger = 0,
-                hornyness = 0
+            entities.add(
+                Entity(
+                    id = i,
+                    genome = genome,
+                    color = genome.generateColor(),
+                    coordinates = getRandomNonOccupiedCoordinate(),
+                    age = 0,
+                    energy = 100,
+                    hunger = 0,
+                    hornyness = 0
+                )
             )
         }
     }
 
-    private fun getNeurons(category: NeuronCategory, numberOfNeurons: Int) =
-        NeuronType.values()
-            .filter { it.category == category }
-            .mapIndexed { index, value ->
-                Neuron(
-                    id = index.toShort(),
-                    type = value
-                )
-            }
-            .take(numberOfNeurons)
-
     /**
-     * Return
+     * Returns a random coordinate in the World that is not currently occupied by any entity
+     *
+     * @return Coordinates - random non-occupied coordinate
      */
-    private fun getRandomCoordinate(): Coordinates {
+    private fun getRandomNonOccupiedCoordinate(): Coordinates {
         var coord: Coordinates
         do {
             coord = Coordinates(
-                x = getRandomNumber(worldParams.worldSize),
-                y = getRandomNumber(worldParams.worldSize)
+                x = getRandomInteger(worldParams.worldSize),
+                y = getRandomInteger(worldParams.worldSize)
             )
-        } while (world[coord.x]?.get(coord.y)?.hasEntity?.not() ?: throw IllegalStateException("Cell is null"))
+        } while (world[coord.x]?.get(coord.y)?.hasEntity ?: throw IllegalStateException("Cell is null"))
         return coord
     }
 
@@ -109,33 +102,13 @@ class Simulation(private val worldParams: WorldParams) {
      * @param max positive integer to apply as an exclusive upper limit to the range of random numbers
      * @return generated Int value
      */
-    private fun getRandomNumber(max: Int): Int {
+    private fun getRandomInteger(max: Int): Int {
         // Calculate a minimum number of bits needed to represent the maximum
         val minNumberOfBits = Integer.toBinaryString(max).length
+
+        goToNextRandomNumberFile(minNumberOfBits)
         // Get minNumberOfBits bits from a file starting at randomNumberCursorPosition
-        val randomBits =
-            randomBytesString?.substring(randomNumberCursorPosition, randomNumberCursorPosition + minNumberOfBits)
-        // Update cursor position so that the next time this method is called, it fetches unused bits from the file
-        randomNumberCursorPosition += minNumberOfBits
-
-        // Convert selected random bits to an integer
-        var randomNumber = randomBits?.let {
-            runCatching {
-                randomBits.toInt(2)
-            }.getOrElse {
-                throw IllegalStateException("Failed to convert bits string into integer")
-            }
-        } ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
-
-        // Random number picked from minNumberOfBits can be bigger than our maximum. We need to scale it down
-        // For that, we check if randomNumber is bigger or equal to max, and if yes
-        // we calculate the maximum number that can be represented with minNumberOfBits, and we multiply randomNumber by
-        // the quotient of max to maxNumberWithMinBits
-        if (randomNumber >= max) {
-            val maxNumberWithMinBits = (2.0.pow(minNumberOfBits) - 1).toInt()
-            randomNumber = (randomNumber * max.toFloat() / maxNumberWithMinBits).toInt() - 1
-        }
-        return randomNumber
+        return getRandomNumber(minNumberOfBits, max)
     }
 
     /**
@@ -145,25 +118,28 @@ class Simulation(private val worldParams: WorldParams) {
      * @return generated Float value
      */
     private fun getRandomFloat(decimalPoints: Int): Float {
+        val max = 10.0.pow(decimalPoints).toInt()
         // Calculate a minimum number of bits needed to represent the float number with given decimal points
-        val minNumberOfBits = Integer.toBinaryString(10.0.pow(decimalPoints).toInt()).length
+        return getRandomInteger(max).toFloat() / 100
+    }
+
+    private fun goToNextRandomNumberFile(minNumberOfBits: Int) {
         val endIndex = randomNumberCursorPosition + minNumberOfBits
-        // Get minNumberOfBits bits from a file starting at randomNumberCursorPosition
-        randomBytesString?.let { randomBytesString ->
-            if (endIndex >= randomBytesString.length) {
-                this.randomBytesString = object {}.javaClass.getResource("random/${++currentRandomBitsFileNumber}")?.readText()
+        randomBitsString?.let {
+            if (endIndex >= it.length) {
+                this.randomBitsString =
+                    object {}.javaClass.getResource("random/${++currentRandomBitsFileNumber}")?.readText()
             }
-            return getRandomFloatValue(randomBytesString, minNumberOfBits)
         } ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
     }
 
-    private fun getRandomFloatValue(randomBytesString: String, minNumberOfBits: Int): Float {
+    private fun getRandomNumber(minNumberOfBits: Int, max: Int): Int {
         val randomBits =
             runCatching {
-                randomBytesString.substring(
+                randomBitsString?.substring(
                     randomNumberCursorPosition,
                     randomNumberCursorPosition + minNumberOfBits
-                )
+                ) ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
             }.getOrElse {
                 throw IllegalStateException("Ran out of random bits in a file")
             }
@@ -171,7 +147,16 @@ class Simulation(private val worldParams: WorldParams) {
         randomNumberCursorPosition += minNumberOfBits
         // Convert selected random bits to an integer and return it
         runCatching {
-            return randomBits.toInt(2).toFloat() / 100
+            var randomNumber = randomBits.toInt(2)
+            // Random number picked from minNumberOfBits can be bigger than our maximum. We need to scale it down
+            // For that, we check if randomNumber is bigger or equal to max, and if yes
+            // we calculate the maximum number that can be represented with minNumberOfBits, and we multiply randomNumber by
+            // the quotient of max to maxNumberWithMinBits
+            if (randomNumber >= max) {
+                val maxNumberWithMinBits = (2.0.pow(minNumberOfBits) - 1).toInt()
+                randomNumber = (randomNumber * max.toFloat() / maxNumberWithMinBits).toInt() - 1
+            }
+            return randomNumber
         }.getOrElse {
             throw IllegalStateException("Failed to convert bits string into integer")
         }

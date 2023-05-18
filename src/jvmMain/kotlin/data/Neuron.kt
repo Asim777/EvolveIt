@@ -1,6 +1,6 @@
 package data
 
-class Neuron(
+open class Neuron(
     val id: Short,
     val type: NeuronType
 )
@@ -94,3 +94,14 @@ enum class NeuronDataType {
     Numerical,
     None
 }
+
+fun getNeurons(category: NeuronCategory, numberOfNeurons: Int) =
+    NeuronType.values()
+        .filter { it.category == category }
+        .mapIndexed { index, value ->
+            Neuron(
+                id = index.toShort(),
+                type = value
+            )
+        }
+        .take(numberOfNeurons)
