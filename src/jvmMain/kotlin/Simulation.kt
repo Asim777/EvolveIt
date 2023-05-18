@@ -162,14 +162,3 @@ class Simulation(private val worldParams: WorldParams) {
         }
     }
 }
-
-/**
- * Generate a random color based on the genes.
- * We need it to visually represent the diversity and genetic similarity
- *
- * @return generated Color
- */
-fun Array<Gene>.generateColor(): Color {
-    val genomeHashCode = this.contentHashCode()
-    return Color(genomeHashCode and 0xFFFFFF)
-}
