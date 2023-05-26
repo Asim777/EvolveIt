@@ -29,8 +29,13 @@ class Simulation(private val worldParams: WorldParams) {
         }
 
         createInitialGenePool()
-        createEntities()
-        placeFood()
+        createInitialEntities()
+        placeInitialFood()
+
+        randomNumberCursorPosition = 0
+        currentRandomBitsFileNumber = 0
+
+        //TODO: Delete lines below
         val worldColumns = world.values
         val numberOfFood = worldColumns.flatMap {
             it.values.filter { cell -> cell.hasFood }
@@ -73,7 +78,7 @@ class Simulation(private val worldParams: WorldParams) {
         }
     }
 
-    private fun createEntities() {
+    private fun createInitialEntities() {
         for (i in 0 until worldParams.initialPopulation) {
             val genome = genePool[i]
             val coord = getRandomNonOccupiedCoordinate()
@@ -94,11 +99,27 @@ class Simulation(private val worldParams: WorldParams) {
         }
     }
 
-    private fun placeFood(  ) {
-        var numberOfFoodLeftToPlaceInEnd = 0
+    /**
+     * Generates initial food for Simulation setup and places it in the world
+     */
+    private fun placeInitialFood() {
         val numberOfFood = (foodAvailabilityCoefficient * worldParams.foodAvailability * worldParams.worldSize).toInt()
-        val foodLocations = (0 until worldParams.worldSize*worldParams.worldSize).shuffled().take(numberOfFood)
-        for (i in 0 until numberOfFood) {
+        placeFood(numberOfFood)
+    }
+
+    /**
+     * Places a given number of food in the world at random locations. Calls itself as many times as needed until all the
+     * given amount of food is placed
+     *
+     * @param numberOfFoodToPlace - number of food that needs to be placed on the World
+     */
+    private fun placeFood(numberOfFoodToPlace: Int) {
+        var numberOfFoodLeftToPlaceInEnd = 0
+        val foodLocations = (0 until worldParams.worldSize*worldParams.worldSize)
+            .shuffled()
+            .take(numberOfFoodToPlace)
+
+        for (i in 0 until numberOfFoodToPlace) {
             val coord = Coordinates(
                 x = foodLocations[i]%worldParams.worldSize,
                 y = foodLocations[i]/worldParams.worldSize
@@ -107,6 +128,8 @@ class Simulation(private val worldParams: WorldParams) {
                 if (!hasFood) hasFood = true else numberOfFoodLeftToPlaceInEnd++
             }
         }
+
+        if (numberOfFoodLeftToPlaceInEnd > 0) placeFood(numberOfFoodLeftToPlaceInEnd)
     }
 
     /**
