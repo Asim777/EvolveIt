@@ -1,5 +1,5 @@
-import androidx.compose.ui.graphics.Color
 import data.*
+import kotlin.collections.HashMap
 import kotlin.math.pow
 
 class Simulation(private val worldParams: WorldParams) {
@@ -30,7 +30,18 @@ class Simulation(private val worldParams: WorldParams) {
 
         createInitialGenePool()
         createEntities()
-        println("Setup Finished")
+        placeFood()
+        val worldColumns = world.values
+        val numberOfFood = worldColumns.flatMap {
+            it.values.filter { cell -> cell.hasFood }
+        }.size
+        val numberOfEntities = worldColumns.flatMap {
+            it.values.filter { cell -> cell.hasEntity }
+        }.size
+        val numberOfCellsWithEntitiesAndFood = worldColumns.flatMap {
+            it.values.filter { cell -> cell.hasFood && cell.hasEntity }
+        }.size
+        println("Setup Finished, number of entities: $numberOfEntities, number of food: $numberOfFood, number of cells with entities and food: $numberOfCellsWithEntitiesAndFood")
     }
 
     private fun createInitialGenePool() {
@@ -65,18 +76,36 @@ class Simulation(private val worldParams: WorldParams) {
     private fun createEntities() {
         for (i in 0 until worldParams.initialPopulation) {
             val genome = genePool[i]
+            val coord = getRandomNonOccupiedCoordinate()
             entities.add(
                 Entity(
                     id = i,
                     genome = genome,
                     color = genome.generateColor(),
-                    coordinates = getRandomNonOccupiedCoordinate(),
+                    coordinates = coord,
                     age = 0,
                     energy = 100,
                     hunger = 0,
                     hornyness = 0
                 )
             )
+            // Update world with new entity cell coordinate
+            world[coord.x]?.get(coord.y)?.hasEntity = true
+        }
+    }
+
+    private fun placeFood(  ) {
+        var numberOfFoodLeftToPlaceInEnd = 0
+        val numberOfFood = (foodAvailabilityCoefficient * worldParams.foodAvailability * worldParams.worldSize).toInt()
+        val foodLocations = (0 until worldParams.worldSize*worldParams.worldSize).shuffled().take(numberOfFood)
+        for (i in 0 until numberOfFood) {
+            val coord = Coordinates(
+                x = foodLocations[i]%worldParams.worldSize,
+                y = foodLocations[i]/worldParams.worldSize
+            )
+            world[coord.x]?.get(coord.y)?.run {
+                if (!hasFood) hasFood = true else numberOfFoodLeftToPlaceInEnd++
+            }
         }
     }
 
@@ -92,7 +121,26 @@ class Simulation(private val worldParams: WorldParams) {
                 x = getRandomInteger(worldParams.worldSize),
                 y = getRandomInteger(worldParams.worldSize)
             )
-        } while (world[coord.x]?.get(coord.y)?.hasEntity ?: throw IllegalStateException("Cell is null"))
+        } while (world[coord.x]?.get(coord.y)?.hasEntity == true)
+        return coord
+    }
+
+    /**
+     * Returns a random coordinate in the World that is not currently occupied by any entity and doesn't have a food
+     * in it
+     *
+     * @return Coordinates - random non-occupied coordinate without food
+     */
+    private fun getPseudoRandomNonOccupiedCoordinateWithoutFood(): Coordinates {
+        var coord: Coordinates
+        var cell: Cell?
+        do {
+            coord = Coordinates(
+                x = getRandomInteger(worldParams.worldSize),
+                y = getRandomInteger(worldParams.worldSize)
+            )
+            cell = world[coord.x]?.get(coord.y)
+        } while (cell?.hasEntity == true || cell?.hasFood == true)
         return coord
     }
 
@@ -106,7 +154,7 @@ class Simulation(private val worldParams: WorldParams) {
         // Calculate a minimum number of bits needed to represent the maximum
         val minNumberOfBits = Integer.toBinaryString(max).length
 
-        goToNextRandomNumberFile(minNumberOfBits)
+        goToNextRandomNumberFileIfNecessary(minNumberOfBits)
         // Get minNumberOfBits bits from a file starting at randomNumberCursorPosition
         return getRandomNumber(minNumberOfBits, max)
     }
@@ -123,12 +171,13 @@ class Simulation(private val worldParams: WorldParams) {
         return getRandomInteger(max).toFloat() / 100
     }
 
-    private fun goToNextRandomNumberFile(minNumberOfBits: Int) {
+    private fun goToNextRandomNumberFileIfNecessary(minNumberOfBits: Int) {
         val endIndex = randomNumberCursorPosition + minNumberOfBits
         randomBitsString?.let {
             if (endIndex >= it.length) {
                 this.randomBitsString =
                     object {}.javaClass.getResource("random/${++currentRandomBitsFileNumber}")?.readText()
+                randomNumberCursorPosition = 0
             }
         } ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
     }
@@ -141,7 +190,7 @@ class Simulation(private val worldParams: WorldParams) {
                     randomNumberCursorPosition + minNumberOfBits
                 ) ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
             }.getOrElse {
-                throw IllegalStateException("Ran out of random bits in a file")
+                throw IllegalStateException("Ran out of random bits in a file: @${currentRandomBitsFileNumber}")
             }
         // Update cursor position so that the next time this method is called, it fetches unused bits from the file
         randomNumberCursorPosition += minNumberOfBits
@@ -158,7 +207,12 @@ class Simulation(private val worldParams: WorldParams) {
             }
             return randomNumber
         }.getOrElse {
-            throw IllegalStateException("Failed to convert bits string into integer")
+            throw IllegalStateException("Failed to convert bits string into integer. Random number: $randomBits")
         }
+    }
+
+    companion object {
+        private const val foodAvailabilityCoefficient = 400
+        private const val foodPlacementRandomnessCoefficient = 1000
     }
 }

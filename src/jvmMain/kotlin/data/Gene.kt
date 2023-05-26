@@ -8,6 +8,13 @@ class Gene(
     val weight: Float
 ) {
     override fun hashCode() = (input.hashCode() * 0.5 + output.hashCode() * 0.5).toInt()
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Gene
+        return input == other.input && output == other.output
+    }
 }
 
 /**
