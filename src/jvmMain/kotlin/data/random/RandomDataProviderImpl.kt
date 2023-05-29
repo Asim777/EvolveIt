@@ -9,9 +9,13 @@ import kotlin.math.pow
  */
 class RandomDataProviderImpl: RandomDataProvider {
 
-    private var randomBitsString = object {}.javaClass.getResource("random/0")?.readText()
+    private var randomBitsString: String? = null
     private var randomNumberCursorPosition = 0
     private var currentRandomBitsFileNumber = 0
+
+    init {
+         randomBitsString = object {}.javaClass.getResource("/random/0")?.readText()
+    }
 
     override fun getRandomInteger(max: Int): Int {
         // Calculate a minimum number of bits needed to represent the maximum
@@ -44,10 +48,10 @@ class RandomDataProviderImpl: RandomDataProvider {
         randomBitsString?.let {
             if (endIndex >= it.length) {
                 this.randomBitsString =
-                    object {}.javaClass.getResource("random/${++currentRandomBitsFileNumber}")?.readText()
+                    object {}.javaClass.getResource("/random/${++currentRandomBitsFileNumber}")?.readText() ?: ""
                 randomNumberCursorPosition = 0
             }
-        } ?: throw IllegalStateException("Failed to generate random number. randomBits is null")
+        } ?: throw IllegalStateException("Failed to generate random number. randomBitsString is null")
     }
 
     private fun getRandomNumber(minNumberOfBits: Int, max: Int): Int {

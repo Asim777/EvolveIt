@@ -1,19 +1,25 @@
 package data
 
-class WorldParams(
+data class WorldParams(
     // W
     val worldSize: Int,
     // E
     val initialPopulation: Int,
     // G
-    val genomeLength: Short,
+    val genomeLength: Int,
     // F
     val foodAvailability: Float,
     val mutationRate: Float,
+    // N_n
+    val numberOfNeurons: NumberOfNeurons
+)
+
+data class NumberOfNeurons(
+    val total: Int,
     // N_sn
-    val numberOfSensorNeurons: Short,
+    val sensorNeurons: Int,
     // N_sn
-    val numberOfInnerNeurons: Short,
+    val innerNeurons: Int,
     // N_sk
-    val numberOfSinkNeurons: Short,
+    val sinkNeurons: Int,
 )

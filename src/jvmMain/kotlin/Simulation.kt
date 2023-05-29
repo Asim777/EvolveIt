@@ -1,13 +1,15 @@
 import data.*
+import data.random.RandomDataProvider
 import data.random.RandomDataProviderImpl
 import kotlin.collections.HashMap
+import kotlin.math.pow
 
 class Simulation(private val worldParams: WorldParams) {
 
     private val world = hashMapOf<Int, HashMap<Int, Cell>>()
     private val genePool = mutableListOf<Array<Gene>>()
     private val entities = mutableListOf<Entity>()
-    private val randomDataProvider by lazy { RandomDataProviderImpl() }
+    private val randomDataProvider: RandomDataProvider by lazy { RandomDataProviderImpl() }
 
     fun setup() {
         createWorld()
@@ -28,7 +30,16 @@ class Simulation(private val worldParams: WorldParams) {
         val numberOfCellsWithEntitiesAndFood = worldColumns.flatMap {
             it.values.filter { cell -> cell.hasFood && cell.hasEntity }
         }.size
-        println("Setup Finished, number of entities: $numberOfEntities, number of food: $numberOfFood, number of cells with entities and food: $numberOfCellsWithEntitiesAndFood")
+        println(
+            "Setup Finished, " +
+                    "number of entities: $numberOfEntities, " +
+                    "number of food: $numberOfFood, " +
+                    "number of cells with entities and food: $numberOfCellsWithEntitiesAndFood"
+        )
+    }
+
+    fun start() {
+        TODO("Not implemented")
     }
 
     private fun createWorld() {
@@ -36,12 +47,8 @@ class Simulation(private val worldParams: WorldParams) {
             world[column] = hashMapOf()
             for (row in 0 until worldParams.worldSize) {
                 world[column]?.set(
-                    key = row,
-                    value = Cell(
-                        id = column + row,
-                        coordinates = Coordinates(column, row),
-                        hasEntity = false,
-                        hasFood = false
+                    key = row, value = Cell(
+                        id = column + row, coordinates = Coordinates(column, row), hasEntity = false, hasFood = false
                     )
                 ) ?: throw IllegalStateException("Cell column is null")
             }
@@ -50,21 +57,25 @@ class Simulation(private val worldParams: WorldParams) {
 
     private fun createInitialGenePool() {
         // Create Neurons
-        val sensorNeurons = getNeurons(NeuronCategory.Sensor, worldParams.numberOfSensorNeurons.toInt())
-        val innerNeurons = getNeurons(NeuronCategory.Inner, worldParams.numberOfInnerNeurons.toInt())
-        val sinkNeurons = getNeurons(NeuronCategory.Sink, worldParams.numberOfSinkNeurons.toInt())
+        val neurons = getNeurons(worldParams.numberOfNeurons.total)
+
+        val sensorNeurons = neurons.filter { it.category is NeuronCategory.Sensor }
+        val innerNeurons = neurons.filter { it.category is NeuronCategory.Inner }
+        val sinkNeurons = neurons.filter { it.category is NeuronCategory.Sink }
 
         // Create Gene pool
         for (i in 0 until worldParams.initialPopulation) {
             val genome = mutableListOf<Gene>()
+
             for (j in 0 until worldParams.genomeLength) {
                 // Create a gene and assign to the genome
                 genome.add(
-                    j, Gene(
+                    j,
+                    Gene(
                         input = sensorNeurons.plus(innerNeurons).run {
                             get(randomDataProvider.getRandomInteger(size))
                         },
-                        output = innerNeurons.plus(sinkNeurons).run {
+                        output = sinkNeurons.plus(innerNeurons).run {
                             get(randomDataProvider.getRandomInteger(size))
                         },
                         weight = randomDataProvider.getRandomFloat(2)
@@ -102,26 +113,27 @@ class Simulation(private val worldParams: WorldParams) {
      * Generates initial food for Simulation setup and places it in the world
      */
     private fun placeInitialFood() {
-        val numberOfFood = (foodAvailabilityCoefficient * worldParams.foodAvailability * worldParams.worldSize).toInt()
+        val numberOfFood =
+            (foodAvailabilityCoefficient * worldParams.foodAvailability * worldParams.worldSize.toDouble().pow(2.0))
+                .toInt()
         placeFood(numberOfFood)
     }
 
     /**
-     * Places a given number of food in the world at random locations. Calls itself as many times as needed until all the
-     * given amount of food is placed
+     * Places a given number of food in the world at random locations.
+     * Calls itself as many times as needed until all the given amount of food is placed
      *
      * @param numberOfFoodToPlace - number of food that needs to be placed on the World
      */
     private fun placeFood(numberOfFoodToPlace: Int) {
         var numberOfFoodLeftToPlaceInEnd = 0
-        val foodLocations = (0 until worldParams.worldSize * worldParams.worldSize)
+        val foodLocations = (0 until worldParams.worldSize.toDouble().pow(2).toInt())
             .shuffled()
             .take(numberOfFoodToPlace)
 
         for (i in 0 until numberOfFoodToPlace) {
             val coord = Coordinates(
-                x = foodLocations[i] % worldParams.worldSize,
-                y = foodLocations[i] / worldParams.worldSize
+                x = foodLocations[i] % worldParams.worldSize, y = foodLocations[i] / worldParams.worldSize
             )
             coord.getCell()?.run {
                 if (!hasFood) hasFood = true else numberOfFoodLeftToPlaceInEnd++
@@ -150,6 +162,6 @@ class Simulation(private val worldParams: WorldParams) {
     private fun Coordinates.getCell() = world[this.x]?.get(this.y)
 
     companion object {
-        private const val foodAvailabilityCoefficient = 400
+        private const val foodAvailabilityCoefficient = 0.4
     }
 }
