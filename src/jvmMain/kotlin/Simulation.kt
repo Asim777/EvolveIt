@@ -39,6 +39,11 @@ class Simulation(private val worldParams: WorldParams) {
     }
 
     fun start() {
+        entities.forEach { entity ->
+            entity.genome.forEach { gene ->
+                evaluateInputData(gene, entity)
+            }
+        }
         TODO("Not implemented")
     }
 
@@ -101,7 +106,8 @@ class Simulation(private val worldParams: WorldParams) {
                     age = 0,
                     energy = 100,
                     hunger = 0,
-                    hornyness = 0
+                    hornyness = 0,
+                    direction = Direction.values()[randomDataProvider.getRandomInteger(7)]
                 )
             )
             // Update world with new entity cell coordinate
@@ -143,6 +149,19 @@ class Simulation(private val worldParams: WorldParams) {
         if (numberOfFoodLeftToPlaceInEnd > 0) placeFood(numberOfFoodLeftToPlaceInEnd)
     }
 
+    private fun evaluateInputData(gene: Gene, entity: Entity) {
+        // Do not evaluate useless genes that can't possibly result in action
+        // (when one of neurons is logical and other is numerical)
+        with(gene) {
+            if (
+                input.dataType == output.dataType ||
+                input.dataType == NeuronDataType.None ||
+                output.dataType == NeuronDataType.None
+            ) {
+                input.evaluate(entity.coordinates, entity.direction)
+            }
+        }
+    }
     /**
      * Returns a random coordinate in the World that is not currently occupied by any entity
      *
