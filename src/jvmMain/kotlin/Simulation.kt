@@ -1,6 +1,7 @@
 import data.*
 import data.random.RandomDataProvider
 import data.random.RandomDataProviderImpl
+import org.jetbrains.skia.impl.Log
 import kotlin.collections.HashMap
 import kotlin.math.pow
 
@@ -154,9 +155,8 @@ class Simulation(private val worldParams: WorldParams) {
         // (when one of neurons is logical and other is numerical)
         with(gene) {
             if (
-                input.dataType == output.dataType ||
-                input.dataType == NeuronDataType.None ||
-                output.dataType == NeuronDataType.None
+                (input is LogicalNeuron && output is LogicalNeuron) ||
+                (input is NumericalNeuron && output is NumericalNeuron)
             ) {
                 input.evaluate(entity.coordinates, entity.direction)
             }

@@ -22,12 +22,12 @@ import java.lang.IllegalArgumentException
 import kotlin.math.pow
 
 fun main() = application {
-    val icon = painterResource("sample.png")
+    //val icon = painterResource("sample.png")
 
     Window(
         onCloseRequest = ::exitApplication,
         title = "EvolveIt",
-        icon = icon
+        //icon = icon
     ) {
         window.size = Dimension(1300, 1000)
 
@@ -133,32 +133,32 @@ fun app() {
         // the total number of neurons chosen to total number of neurons in combinations
         updateNumberOfNeurons(
             when (worldParams.value.numberOfNeurons.total) {
-                in 0..11 -> {
-                    getNeuronDistributionByCategory(11)
+                in 0..9 -> {
+                    getNeuronDistributionByCategory(9)
                 }
 
-                in 12..20 -> {
-                    getNeuronDistributionByCategory(20)
+                in 10..18 -> {
+                    getNeuronDistributionByCategory(18)
                 }
 
-                in 21..25 -> {
-                    getNeuronDistributionByCategory(25)
+                in 19..23 -> {
+                    getNeuronDistributionByCategory(23)
                 }
 
-                in 26..34 -> {
-                    getNeuronDistributionByCategory(34)
+                in 24..30 -> {
+                    getNeuronDistributionByCategory(30)
                 }
 
-                in 35..42 -> {
-                    getNeuronDistributionByCategory(42)
+                in 31..38 -> {
+                    getNeuronDistributionByCategory(38)
                 }
 
-                in 43..47 -> {
-                    getNeuronDistributionByCategory(47)
+                in 39..45 -> {
+                    getNeuronDistributionByCategory(45)
                 }
 
-                in 48..53 -> {
-                    getNeuronDistributionByCategory(53)
+                in 46..51 -> {
+                    getNeuronDistributionByCategory(51)
                 }
 
                 else -> {

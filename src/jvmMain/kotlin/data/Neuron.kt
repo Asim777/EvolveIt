@@ -3,525 +3,651 @@ package data
 import java.lang.IllegalArgumentException
 
 
-sealed class Neuron(
-    val id: String,
-    val category: NeuronCategory,
-    val dataType: NeuronDataType
-) {
-    // SENSOR
-    // End of the world sensory logical neurons
-    class EndOfWorldAhead(
-        val value: Boolean = false,
-        id: String = "EoWa",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.EndOfWorld),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
+sealed interface Neuron {
+    val id: String
+    val category: NeuronCategory
 
-    class EndOfWorldFront(
-        val value: Boolean = false,
-        id: String = "EoWf",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.EndOfWorld),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class EndOfWorldLeft(
-        val value: Boolean = false,
-        id: String = "EoWl",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.EndOfWorld),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class EndOfWorldRight(
-        val value: Boolean = false,
-        id: String = "EoWr",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.EndOfWorld),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class EndOfWorldBehind(
-        val value: Boolean = false,
-        id: String = "EoWb",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.EndOfWorld),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    // Entity sensory logical neurons
-    class EntityFront(
-        val value: Boolean = false,
-        id: String = "Ef",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Entity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class EntityLeft(
-        val value: Boolean = false,
-        id: String = "El",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Entity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class EntityRight(
-        val value: Boolean = false,
-        id: String = "Er",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Entity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class EntityBehind(
-        val value: Boolean = false,
-        id: String = "Eb",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Entity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    // Food sensory logical neurons
-    class FoodAhead(
-        val value: Boolean = false,
-        id: String = "Fa",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Food),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class FoodFront(
-        val value: Boolean = false,
-        id: String = "Ff",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Food),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class FoodLeft(
-        val value: Boolean = false,
-        id: String = "Fl",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Food),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class FoodRight(
-        val value: Boolean = false,
-        id: String = "Fr",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Food),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class FoodBehind(
-        val value: Boolean = false,
-        id: String = "Fb",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Food),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class FoodNeighborhood(
-        val value: Boolean = false,
-        id: String = "Fl",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Food),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class FoodSameLocation(
-        val value: Boolean = false,
-        id: String = "Fl",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Food),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    // Entity density sensory numerical neurons
-    class EntityDensityAhead(
-        val value: Float = 0.0f,
-        id: String = "EDa",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.EntityDensity),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class EntityDensityFront(
-        val value: Float = 0.0f,
-        id: String = "EDf",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.EntityDensity),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class EntityDensityNeighborhood(
-        val value: Float = 0.0f,
-        id: String = "EDn",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.EntityDensity),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    // Distance sensory numerical neurons
-    class DistanceObject(
-        val value: Float = 0.0f,
-        id: String = "DO",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Distance),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class DistanceEndOfWorld(
-        val value: Float = 0.0f,
-        id: String = "DEoW",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Distance),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class DistanceEntity(
-        val value: Float = 0.0f,
-        id: String = "DE",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Distance),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class DistanceFood(
-        val value: Float = 0.0f,
-        id: String = "DF",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.Distance),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    // Genetic similarity sensory numerical neurons
-    class GeneticSimilarityAhead(
-        val value: Float = 0.0f,
-        id: String = "GSa",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.GeneticSimilarity),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class GeneticSimilarityFront(
-        val value: Float = 0.0f,
-        id: String = "GSf",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.GeneticSimilarity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class GeneticSimilarityLeft(
-        val value: Float = 0.0f,
-        id: String = "GSl",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.GeneticSimilarity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class GeneticSimilarityRight(
-        val value: Float = 0.0f,
-        id: String = "GSr",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.GeneticSimilarity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class GeneticSimilarityBehind(
-        val value: Float = 0.0f,
-        id: String = "GSb",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.GeneticSimilarity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class GeneticSimilarityNeighborhood(
-        val value: Float = 0.0f,
-        id: String = "GSn",
-        category: NeuronCategory = NeuronCategory.Sensor(subCategory = SensorSubcategory.GeneticSimilarity),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    // INNER
-    // Logical inner neurons
-    class Not(
-        val value: Float = 0.0f,
-        id: String = "!",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.Logical),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class And(
-        val value: Float = 0.0f,
-        id: String = "&",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.Logical),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class Or(
-        val value: Float = 0.0f,
-        id: String = "|",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.Logical),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    class Xor(
-        val value: Float = 0.0f,
-        id: String = "^",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.Logical),
-        dataType: NeuronDataType = NeuronDataType.Logical
-    ) : Neuron(id, category, dataType)
-
-    // Numerical inner neurons
-    class Less05(
-        val value: Float = 0.0f,
-        id: String = "<0.5",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.NumericalBasic),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class More05(
-        val value: Float = 0.0f,
-        id: String = ">0.5",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.NumericalBasic),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class Less025(
-        val value: Float = 0.0f,
-        id: String = "<0.25",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.NumericalAdvanced),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class More025(
-        val value: Float = 0.0f,
-        id: String = ">0.25",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.NumericalAdvanced),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class Less075(
-        val value: Float = 0.0f,
-        id: String = "<0.75",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.NumericalAdvanced),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class More075(
-        val value: Float = 0.0f,
-        id: String = ">0.75",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.NumericalAdvanced),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class More09(
-        val value: Float = 0.0f,
-        id: String = ">0.9",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.NumericalAdvanced),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    class Less01(
-        val value: Float = 0.0f,
-        id: String = "<0.1",
-        category: NeuronCategory = NeuronCategory.Inner(subCategory = InnerSubcategory.NumericalAdvanced),
-        dataType: NeuronDataType = NeuronDataType.Numerical
-    ) : Neuron(id, category, dataType)
-
-    // SINK
-    // Movement sink neurons
-    class MoveNorth(
-        id: String = "Mn",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementBasic),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class MoveNorthEast(
-        id: String = "Mne",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementAdvanced),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class MoveEast(
-        id: String = "Me",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementBasic),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class MoveSouthEast(
-        id: String = "Mse",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementAdvanced),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class MoveSouth(
-        id: String = "Ms",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementBasic),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class MoveSouthWest(
-        id: String = "Msw",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementAdvanced),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class MoveWest(
-        id: String = "Mw",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementBasic),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class MoveNorthWest(
-        id: String = "Mnw",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementAdvanced),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class MoveRandomly(
-        id: String = "Mr",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementAdvanced),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class DontMove(
-        id: String = "DM",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.MovementBasic),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    // Other sink neurons
-    class Eat(
-        id: String = "E",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.Eat),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    class Mate(
-        id: String = "M",
-        category: NeuronCategory = NeuronCategory.Sink(subCategory = SinkSubCategory.Mate),
-        dataType: NeuronDataType = NeuronDataType.None
-    ) : Neuron(id, category, dataType)
-
-    fun evaluate(coordinates: Coordinates, direction: Direction): Boolean =
-        when (dataType) {
-            NeuronDataType.Logical -> evaluateLogical(coordinates, direction)
-            NeuronDataType.Numerical -> TODO()
-            NeuronDataType.None -> TODO()
-        }
-
-    private fun evaluateLogical(coordinates: Coordinates, direction: Direction): Boolean =
-        when (this) {
-            is EndOfWorldAhead -> {
-                when (direction) {
-                    Direction.North,
-                    Direction.NorthEast -> {
-                        coordinates.y - 5 < 0
-                    }
-
-                    Direction.East,
-                    Direction.SouthEast -> TODO()
-
-                    Direction.South,
-                    Direction.SouthWest -> TODO()
-
-                    Direction.West,
-                    Direction.NorthWest -> TODO()
-                }
-            }
-
-            is EndOfWorldFront -> TODO()
-            is EndOfWorldLeft -> TODO()
-            is EndOfWorldRight -> TODO()
-            is EndOfWorldBehind -> TODO()
-            is EntityFront -> TODO()
-            is EntityLeft -> TODO()
-            is EntityRight -> TODO()
-            is EntityBehind -> TODO()
-            is FoodAhead -> TODO()
-            is FoodFront -> TODO()
-            is FoodLeft -> TODO()
-            is FoodRight -> TODO()
-            is FoodBehind -> TODO()
-            is FoodNeighborhood -> TODO()
-            is FoodSameLocation -> TODO()
-            else -> false
-        }
+    fun evaluate(coordinates: Coordinates, direction: Direction): Boolean
 }
 
 sealed class NeuronCategory {
     data class Sensor(val subCategory: SensorSubcategory) : NeuronCategory()
     data class Inner(val subCategory: InnerSubcategory) : NeuronCategory()
     data class Sink(val subCategory: SinkSubCategory) : NeuronCategory()
+
+    enum class SensorSubcategory {
+        EndOfWorld, Entity, Food, EntityDensity, Distance, GeneticSimilarity
+    }
+
+    enum class InnerSubcategory {
+        Logical, NumericalBasic, NumericalAdvanced
+    }
+
+    enum class SinkSubCategory {
+        MovementBasic, MovementAdvanced, Eat, Mate
+    }
 }
 
-enum class SensorSubcategory {
-    EndOfWorld, Entity, Food, EntityDensity, Distance, GeneticSimilarity, Any
+
+abstract class LogicalNeuron(
+    open var value: Boolean,
+    override val id: String,
+    override val category: NeuronCategory,
+) : Neuron
+
+abstract class NumericalNeuron(
+    open var value: Float,
+    override val id: String,
+    override val category: NeuronCategory,
+) : Neuron
+
+// SENSOR
+// End of the world sensory logical neurons
+class EndOfWorldAhead(
+    override var value: Boolean = false,
+    id: String = "EoWa",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        value = when (direction) {
+            Direction.North -> {
+                coordinates.y - 5 < 0
+            }
+
+            Direction.East -> TODO()
+
+            Direction.South -> TODO()
+
+            Direction.West -> TODO()
+        }
+        return value
+    }
 }
 
-enum class InnerSubcategory {
-    Logical, NumericalBasic, NumericalAdvanced, Any
+class EndOfWorldFront(
+    override var value: Boolean = false,
+    id: String = "EoWf",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
 }
 
-enum class SinkSubCategory {
-    MovementBasic, MovementAdvanced, Eat, Mate, Any
+class EndOfWorldLeft(
+    override var value: Boolean = false,
+    id: String = "EoWl",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
 }
 
-enum class NeuronDataType {
-    Logical, Numerical, None
+class EndOfWorldRight(
+    override var value: Boolean = false,
+    id: String = "EoWr",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class EndOfWorldBehind(
+    override var value: Boolean = false,
+    id: String = "EoWb",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// Entity sensory logical neurons
+class EntityFront(
+    override var value: Boolean = false,
+    id: String = "Ef",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class EntityLeft(
+    override var value: Boolean = false,
+    id: String = "El",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class EntityRight(
+    override var value: Boolean = false,
+    id: String = "Er",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class EntityBehind(
+    override var value: Boolean = false,
+    id: String = "Eb",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// Food sensory logical neurons
+class FoodAhead(
+    override var value: Boolean = false,
+    id: String = "Fa",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class FoodFront(
+    override var value: Boolean = false,
+    id: String = "Ff",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class FoodLeft(
+    override var value: Boolean = false,
+    id: String = "Fl",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class FoodRight(
+    override var value: Boolean = false,
+    id: String = "Fr",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class FoodBehind(
+    override var value: Boolean = false,
+    id: String = "Fb",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class FoodNeighborhood(
+    override var value: Boolean = false,
+    id: String = "Fl",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class FoodSameLocation(
+    override var value: Boolean = false,
+    id: String = "Fl",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
+) : LogicalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// Entity density sensory numerical neurons
+class EntityDensityAhead(
+    override var value: Float = 0.0f,
+    id: String = "EDa",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EntityDensity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class EntityDensityFront(
+    override var value: Float = 0.0f,
+    id: String = "EDf",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EntityDensity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class EntityDensityNeighborhood(
+    override var value: Float = 0.0f,
+    id: String = "EDn",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EntityDensity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// Distance sensory numerical neurons
+class DistanceObject(
+    override var value: Float = 0.0f,
+    id: String = "DO",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Distance)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class DistanceEndOfWorld(
+    override var value: Float = 0.0f,
+    id: String = "DEoW",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Distance)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class DistanceEntity(
+    override var value: Float = 0.0f,
+    id: String = "DE",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Distance)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class DistanceFood(
+    override var value: Float = 0.0f,
+    id: String = "DF",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Distance)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// Genetic similarity sensory numerical neurons
+class GeneticSimilarityAhead(
+    override var value: Float = 0.0f,
+    id: String = "GSa",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class GeneticSimilarityFront(
+    override var value: Float = 0.0f,
+    id: String = "GSf",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class GeneticSimilarityLeft(
+    override var value: Float = 0.0f,
+    id: String = "GSl",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class GeneticSimilarityRight(
+    override var value: Float = 0.0f,
+    id: String = "GSr",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class GeneticSimilarityBehind(
+    override var value: Float = 0.0f,
+    id: String = "GSb",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class GeneticSimilarityNeighborhood(
+    override var value: Float = 0.0f,
+    id: String = "GSn",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// INNER
+// Logical inner neurons
+class Not(
+    override var value: Float = 0.0f,
+    id: String = "!",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.Logical)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class And(
+    override var value: Float = 0.0f,
+    id: String = "&",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.Logical)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class Or(
+    override var value: Float = 0.0f,
+    id: String = "|",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.Logical)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class Xor(
+    override var value: Float = 0.0f,
+    id: String = "^",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.Logical)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// Numerical inner neurons
+class Less05(
+    override var value: Float = 0.0f,
+    id: String = "<0.5",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalBasic)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class More05(
+    override var value: Float = 0.0f,
+    id: String = ">0.5",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalBasic)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class Less025(
+    override var value: Float = 0.0f,
+    id: String = "<0.25",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class More025(
+    override var value: Float = 0.0f,
+    id: String = ">0.25",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class Less075(
+    override var value: Float = 0.0f,
+    id: String = "<0.75",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class More075(
+    override var value: Float = 0.0f,
+    id: String = ">0.75",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class More09(
+    override var value: Float = 0.0f,
+    id: String = ">0.9",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class Less01(
+    override var value: Float = 0.0f,
+    id: String = "<0.1",
+    category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// SINK
+// Movement sink neurons
+class MoveForward(
+    override var value: Float = 0.0f,
+    id: String = "Mf",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementBasic)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class MoveRight(
+    override var value: Float = 0.0f,
+    id: String = "Mr",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class MoveLeft(
+    override var value: Float = 0.0f,
+    id: String = "Ml",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementBasic)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class MoveBack(
+    override var value: Float = 0.0f,
+    id: String = "Mb",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class MoveRandomly(
+    override var value: Float = 0.0f,
+    id: String = "Mran",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// Turn sink neurons
+class TurnRight(
+    override var value: Float = 0.0f,
+    id: String = "Tr",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementBasic)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class TurnLeft(
+    override var value: Float = 0.0f,
+    id: String = "Tl",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementAdvanced)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class TurnBack(
+    override var value: Float = 0.0f,
+    id: String = "Tb",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementBasic)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+// Other sink neurons
+class Eat(
+    override var value: Float = 0.0f,
+    id: String = "E",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.Eat)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
+}
+
+class Mate(
+    override var value: Float = 0.0f,
+    id: String = "M",
+    category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.Mate)
+) : NumericalNeuron(value, id, category) {
+    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+        TODO()
+    }
 }
 
 fun getNeurons(numberOfNeurons: Int): List<Neuron> =
     when (numberOfNeurons) {
-        11 -> listOf(
-            Neuron.EndOfWorldAhead(),
-            Neuron.EntityFront(),
-            Neuron.FoodAhead(),
-            Neuron.FoodSameLocation(),
-            Neuron.MoveNorth(),
-            Neuron.MoveEast(),
-            Neuron.MoveSouth(),
-            Neuron.MoveWest(),
-            Neuron.DontMove(),
-            Neuron.Eat(),
-            Neuron.Mate()
+        9 -> listOf(
+            EndOfWorldAhead(),
+            EntityFront(),
+            FoodAhead(),
+            FoodSameLocation(),
+            Eat(),
+            Mate(),
+            MoveForward(),
+            TurnRight(),
+            TurnLeft()
         )
 
-        20 -> getNeurons(11) + listOf(
-            Neuron.DistanceObject(),
-            Neuron.EndOfWorldFront(),
-            Neuron.FoodFront(),
-            Neuron.FoodNeighborhood(),
-            Neuron.EntityDensityAhead(),
-            Neuron.And(),
-            Neuron.Or(),
-            Neuron.Less05(),
-            Neuron.More05()
+        18 -> getNeurons(9) + listOf(
+            DistanceObject(),
+            EndOfWorldFront(),
+            FoodFront(),
+            FoodNeighborhood(),
+            EntityDensityAhead(),
+            And(),
+            Or(),
+            Less05(),
+            More05()
         )
 
-        25 -> getNeurons(20) + listOf(
-            Neuron.DistanceFood(),
-            Neuron.EntityDensityFront(),
-            Neuron.GeneticSimilarityAhead(),
-            Neuron.Not(),
-            Neuron.MoveRandomly()
+        23 -> getNeurons(18) + listOf(
+            DistanceFood(),
+            EntityDensityFront(),
+            GeneticSimilarityAhead(),
+            Not(),
+            MoveRandomly()
         )
 
-        34 -> getNeurons(25) + listOf(
-            Neuron.EntityDensityNeighborhood(),
-            Neuron.GeneticSimilarityFront(),
-            Neuron.Xor(),
-            Neuron.More025(),
-            Neuron.More075(),
-            Neuron.MoveNorthEast(),
-            Neuron.MoveSouthEast(),
-            Neuron.MoveSouthWest(),
-            Neuron.MoveNorthWest()
+        30 -> getNeurons(23) + listOf(
+            EntityDensityNeighborhood(),
+            GeneticSimilarityFront(),
+            Xor(),
+            More025(),
+            More075(),
+            MoveBack(),
+            TurnBack()
         )
 
-        42 -> getNeurons(34) + listOf(
-            Neuron.DistanceEndOfWorld(),
-            Neuron.DistanceEntity(),
-            Neuron.FoodLeft(),
-            Neuron.FoodRight(),
-            Neuron.FoodBehind(),
-            Neuron.GeneticSimilarityNeighborhood(),
-            Neuron.Less025(),
-            Neuron.Less075()
+        38 -> getNeurons(30) + listOf(
+            DistanceEndOfWorld(),
+            DistanceEntity(),
+            FoodLeft(),
+            FoodRight(),
+            FoodBehind(),
+            GeneticSimilarityNeighborhood(),
+            Less025(),
+            Less075()
         )
 
-        47 -> getNeurons(42) + listOf(
-            Neuron.EntityLeft(),
-            Neuron.EntityRight(),
-            Neuron.EntityBehind(),
-            Neuron.More09(),
-            Neuron.Less01()
+        45 -> getNeurons(38) + listOf(
+            EntityLeft(),
+            EntityRight(),
+            EntityBehind(),
+            More09(),
+            Less01(),
+            MoveRight(),
+            MoveLeft()
         )
 
-        53 -> getNeurons(47) + listOf(
-            Neuron.EndOfWorldLeft(),
-            Neuron.EndOfWorldRight(),
-            Neuron.EndOfWorldBehind(),
-            Neuron.GeneticSimilarityLeft(),
-            Neuron.GeneticSimilarityRight(),
-            Neuron.GeneticSimilarityBehind(),
+        51 -> getNeurons(45) + listOf(
+            EndOfWorldLeft(),
+            EndOfWorldRight(),
+            EndOfWorldBehind(),
+            GeneticSimilarityLeft(),
+            GeneticSimilarityRight(),
+            GeneticSimilarityBehind(),
         )
 
         else -> {
