@@ -158,7 +158,7 @@ class Simulation(private val worldParams: WorldParams) {
                 input.dataType == NeuronDataType.None ||
                 output.dataType == NeuronDataType.None
             ) {
-                input.evaluate(entity.coordinates, entity.direction)
+                input.value = input.evaluate(entity.coordinates, entity.direction)
             }
         }
     }

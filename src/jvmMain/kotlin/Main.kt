@@ -22,12 +22,12 @@ import java.lang.IllegalArgumentException
 import kotlin.math.pow
 
 fun main() = application {
-    val icon = painterResource("sample.png")
+    //val icon = painterResource("sample.png")
 
     Window(
         onCloseRequest = ::exitApplication,
         title = "EvolveIt",
-        icon = icon
+        //icon = icon
     ) {
         window.size = Dimension(1300, 1000)
 

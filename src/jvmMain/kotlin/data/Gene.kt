@@ -3,8 +3,8 @@ package data
 import androidx.compose.ui.graphics.Color
 
 class Gene(
-    val input: Neuron,
-    val output: Neuron,
+    val input: Neuron<out Any>,
+    val output: Neuron<out Any>,
     val weight: Float
 ) {
     override fun hashCode() = (input.hashCode() * 0.5 + output.hashCode() * 0.5).toInt()
