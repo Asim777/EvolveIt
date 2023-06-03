@@ -7,7 +7,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -16,7 +15,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import data.NumberOfNeurons
 import data.WorldParams
-import data.getNeuronDistributionByCategory
+import data.neuron.getNeuronDistributionByCategory
 import java.awt.Dimension
 import java.lang.IllegalArgumentException
 import kotlin.math.pow
@@ -137,28 +136,28 @@ fun app() {
                     getNeuronDistributionByCategory(9)
                 }
 
-                in 10..18 -> {
-                    getNeuronDistributionByCategory(18)
+                in 10..17 -> {
+                    getNeuronDistributionByCategory(17)
                 }
 
-                in 19..23 -> {
-                    getNeuronDistributionByCategory(23)
+                in 18..22 -> {
+                    getNeuronDistributionByCategory(22)
                 }
 
-                in 24..30 -> {
-                    getNeuronDistributionByCategory(30)
+                in 23..29 -> {
+                    getNeuronDistributionByCategory(29)
                 }
 
-                in 31..38 -> {
-                    getNeuronDistributionByCategory(38)
+                in 30..37 -> {
+                    getNeuronDistributionByCategory(37)
                 }
 
-                in 39..45 -> {
-                    getNeuronDistributionByCategory(45)
+                in 38..44 -> {
+                    getNeuronDistributionByCategory(44)
                 }
 
-                in 46..51 -> {
-                    getNeuronDistributionByCategory(51)
+                in 45..50 -> {
+                    getNeuronDistributionByCategory(50)
                 }
 
                 else -> {

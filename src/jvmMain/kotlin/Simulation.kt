@@ -1,7 +1,10 @@
 import data.*
+import data.neuron.LogicalNeuron
+import data.neuron.NeuronCategory
+import data.neuron.NumericalNeuron
+import data.neuron.getNeurons
 import data.random.RandomDataProvider
 import data.random.RandomDataProviderImpl
-import org.jetbrains.skia.impl.Log
 import kotlin.collections.HashMap
 import kotlin.math.pow
 
@@ -158,7 +161,7 @@ class Simulation(private val worldParams: WorldParams) {
                 (input is LogicalNeuron && output is LogicalNeuron) ||
                 (input is NumericalNeuron && output is NumericalNeuron)
             ) {
-                input.evaluate(entity.coordinates, entity.direction)
+                input.evaluate(entity.coordinates, entity.direction, worldParams.worldSize)
             }
         }
     }

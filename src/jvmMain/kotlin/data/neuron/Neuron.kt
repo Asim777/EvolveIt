@@ -1,5 +1,12 @@
-package data
+package data.neuron
 
+import data.Coordinates
+import data.Direction
+import data.NumberOfNeurons
+import data.neuron.sensor.end_of_world.EndOfWorldBehind
+import data.neuron.sensor.end_of_world.EndOfWorldFront
+import data.neuron.sensor.end_of_world.EndOfWorldLeft
+import data.neuron.sensor.end_of_world.EndOfWorldRight
 import java.lang.IllegalArgumentException
 
 
@@ -7,7 +14,7 @@ sealed interface Neuron {
     val id: String
     val category: NeuronCategory
 
-    fun evaluate(coordinates: Coordinates, direction: Direction): Boolean
+    fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean
 }
 
 sealed class NeuronCategory {
@@ -42,67 +49,6 @@ abstract class NumericalNeuron(
 ) : Neuron
 
 // SENSOR
-// End of the world sensory logical neurons
-class EndOfWorldAhead(
-    override var value: Boolean = false,
-    id: String = "EoWa",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
-        value = when (direction) {
-            Direction.North -> {
-                coordinates.y - 5 < 0
-            }
-
-            Direction.East -> TODO()
-
-            Direction.South -> TODO()
-
-            Direction.West -> TODO()
-        }
-        return value
-    }
-}
-
-class EndOfWorldFront(
-    override var value: Boolean = false,
-    id: String = "EoWf",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
-        TODO()
-    }
-}
-
-class EndOfWorldLeft(
-    override var value: Boolean = false,
-    id: String = "EoWl",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
-        TODO()
-    }
-}
-
-class EndOfWorldRight(
-    override var value: Boolean = false,
-    id: String = "EoWr",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
-        TODO()
-    }
-}
-
-class EndOfWorldBehind(
-    override var value: Boolean = false,
-    id: String = "EoWb",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
-        TODO()
-    }
-}
 
 // Entity sensory logical neurons
 class EntityFront(
@@ -110,7 +56,7 @@ class EntityFront(
     id: String = "Ef",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -120,7 +66,7 @@ class EntityLeft(
     id: String = "El",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -130,7 +76,7 @@ class EntityRight(
     id: String = "Er",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -140,7 +86,7 @@ class EntityBehind(
     id: String = "Eb",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -151,7 +97,7 @@ class FoodAhead(
     id: String = "Fa",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -161,7 +107,7 @@ class FoodFront(
     id: String = "Ff",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -171,7 +117,7 @@ class FoodLeft(
     id: String = "Fl",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -181,7 +127,7 @@ class FoodRight(
     id: String = "Fr",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -191,7 +137,7 @@ class FoodBehind(
     id: String = "Fb",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -201,7 +147,7 @@ class FoodNeighborhood(
     id: String = "Fl",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -211,7 +157,7 @@ class FoodSameLocation(
     id: String = "Fl",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Food)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -222,7 +168,7 @@ class EntityDensityAhead(
     id: String = "EDa",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EntityDensity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -232,7 +178,7 @@ class EntityDensityFront(
     id: String = "EDf",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EntityDensity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -242,7 +188,7 @@ class EntityDensityNeighborhood(
     id: String = "EDn",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EntityDensity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -253,7 +199,7 @@ class DistanceObject(
     id: String = "DO",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Distance)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -263,7 +209,7 @@ class DistanceEndOfWorld(
     id: String = "DEoW",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Distance)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -273,7 +219,7 @@ class DistanceEntity(
     id: String = "DE",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Distance)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -283,7 +229,7 @@ class DistanceFood(
     id: String = "DF",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Distance)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -294,7 +240,7 @@ class GeneticSimilarityAhead(
     id: String = "GSa",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -304,7 +250,7 @@ class GeneticSimilarityFront(
     id: String = "GSf",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -314,7 +260,7 @@ class GeneticSimilarityLeft(
     id: String = "GSl",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -324,7 +270,7 @@ class GeneticSimilarityRight(
     id: String = "GSr",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -334,7 +280,7 @@ class GeneticSimilarityBehind(
     id: String = "GSb",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -344,7 +290,7 @@ class GeneticSimilarityNeighborhood(
     id: String = "GSn",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.GeneticSimilarity)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -356,7 +302,7 @@ class Not(
     id: String = "!",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.Logical)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -366,7 +312,7 @@ class And(
     id: String = "&",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.Logical)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -376,7 +322,7 @@ class Or(
     id: String = "|",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.Logical)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -386,7 +332,7 @@ class Xor(
     id: String = "^",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.Logical)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -397,7 +343,7 @@ class Less05(
     id: String = "<0.5",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalBasic)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -407,7 +353,7 @@ class More05(
     id: String = ">0.5",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalBasic)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -417,7 +363,7 @@ class Less025(
     id: String = "<0.25",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -427,7 +373,7 @@ class More025(
     id: String = ">0.25",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -437,7 +383,7 @@ class Less075(
     id: String = "<0.75",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -447,7 +393,7 @@ class More075(
     id: String = ">0.75",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -457,7 +403,7 @@ class More09(
     id: String = ">0.9",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -467,7 +413,7 @@ class Less01(
     id: String = "<0.1",
     category: NeuronCategory = NeuronCategory.Inner(subCategory = NeuronCategory.InnerSubcategory.NumericalAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -479,7 +425,7 @@ class MoveForward(
     id: String = "Mf",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementBasic)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -489,7 +435,7 @@ class MoveRight(
     id: String = "Mr",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -499,7 +445,7 @@ class MoveLeft(
     id: String = "Ml",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementBasic)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -509,7 +455,7 @@ class MoveBack(
     id: String = "Mb",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -519,7 +465,7 @@ class MoveRandomly(
     id: String = "Mran",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -530,7 +476,7 @@ class TurnRight(
     id: String = "Tr",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementBasic)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -540,7 +486,7 @@ class TurnLeft(
     id: String = "Tl",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementAdvanced)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -550,7 +496,7 @@ class TurnBack(
     id: String = "Tb",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.MovementBasic)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -561,7 +507,7 @@ class Eat(
     id: String = "E",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.Eat)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -571,7 +517,7 @@ class Mate(
     id: String = "M",
     category: NeuronCategory = NeuronCategory.Sink(subCategory = NeuronCategory.SinkSubCategory.Mate)
 ) : NumericalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction): Boolean {
+    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
         TODO()
     }
 }
@@ -579,7 +525,7 @@ class Mate(
 fun getNeurons(numberOfNeurons: Int): List<Neuron> =
     when (numberOfNeurons) {
         9 -> listOf(
-            EndOfWorldAhead(),
+            EndOfWorldFront(),
             EntityFront(),
             FoodAhead(),
             FoodSameLocation(),
@@ -590,9 +536,8 @@ fun getNeurons(numberOfNeurons: Int): List<Neuron> =
             TurnLeft()
         )
 
-        18 -> getNeurons(9) + listOf(
+        17 -> getNeurons(9) + listOf(
             DistanceObject(),
-            EndOfWorldFront(),
             FoodFront(),
             FoodNeighborhood(),
             EntityDensityAhead(),
@@ -602,7 +547,7 @@ fun getNeurons(numberOfNeurons: Int): List<Neuron> =
             More05()
         )
 
-        23 -> getNeurons(18) + listOf(
+        22 -> getNeurons(17) + listOf(
             DistanceFood(),
             EntityDensityFront(),
             GeneticSimilarityAhead(),
@@ -610,7 +555,7 @@ fun getNeurons(numberOfNeurons: Int): List<Neuron> =
             MoveRandomly()
         )
 
-        30 -> getNeurons(23) + listOf(
+        29 -> getNeurons(22) + listOf(
             EntityDensityNeighborhood(),
             GeneticSimilarityFront(),
             Xor(),
@@ -620,7 +565,7 @@ fun getNeurons(numberOfNeurons: Int): List<Neuron> =
             TurnBack()
         )
 
-        38 -> getNeurons(30) + listOf(
+        37 -> getNeurons(29) + listOf(
             DistanceEndOfWorld(),
             DistanceEntity(),
             FoodLeft(),
@@ -631,7 +576,7 @@ fun getNeurons(numberOfNeurons: Int): List<Neuron> =
             Less075()
         )
 
-        45 -> getNeurons(38) + listOf(
+        44 -> getNeurons(37) + listOf(
             EntityLeft(),
             EntityRight(),
             EntityBehind(),
@@ -641,7 +586,7 @@ fun getNeurons(numberOfNeurons: Int): List<Neuron> =
             MoveLeft()
         )
 
-        51 -> getNeurons(45) + listOf(
+        50-> getNeurons(44) + listOf(
             EndOfWorldLeft(),
             EndOfWorldRight(),
             EndOfWorldBehind(),

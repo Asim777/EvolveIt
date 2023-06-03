@@ -1,6 +1,7 @@
 package data
 
 import androidx.compose.ui.graphics.Color
+import data.neuron.Neuron
 
 class Gene(
     val input: Neuron,
