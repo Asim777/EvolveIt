@@ -1,5 +1,6 @@
 package data.neuron
 
+import data.Cell
 import data.Coordinates
 import data.Direction
 import data.NumberOfNeurons
@@ -14,7 +15,12 @@ sealed interface Neuron {
     val id: String
     val category: NeuronCategory
 
-    fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean
+    fun evaluate(
+        coordinates: Coordinates,
+        direction: Direction,
+        worldSize: Int,
+        world: HashMap<Int, HashMap<Int, Cell>>? = null
+    ): Boolean
 }
 
 sealed class NeuronCategory {
@@ -35,7 +41,6 @@ sealed class NeuronCategory {
     }
 }
 
-
 abstract class LogicalNeuron(
     open var value: Boolean,
     override val id: String,
@@ -51,15 +56,6 @@ abstract class NumericalNeuron(
 // SENSOR
 
 // Entity sensory logical neurons
-class EntityFront(
-    override var value: Boolean = false,
-    id: String = "Ef",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
-        TODO()
-    }
-}
 
 class EntityLeft(
     override var value: Boolean = false,

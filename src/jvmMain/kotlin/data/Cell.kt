@@ -8,7 +8,7 @@ class Cell(
     // val type: CellType
 )
 
-class Coordinates(
+data class Coordinates(
     val x: Int,
     val y: Int
 )

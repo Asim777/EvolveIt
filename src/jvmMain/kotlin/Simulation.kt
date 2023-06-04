@@ -1,7 +1,5 @@
 import data.*
-import data.neuron.LogicalNeuron
 import data.neuron.NeuronCategory
-import data.neuron.NumericalNeuron
 import data.neuron.getNeurons
 import data.random.RandomDataProvider
 import data.random.RandomDataProviderImpl
@@ -43,10 +41,9 @@ class Simulation(private val worldParams: WorldParams) {
     }
 
     fun start() {
-        entities.forEach { entity ->
-            entity.genome.forEach { gene ->
-                evaluateInputData(gene, entity)
-            }
+        entities.forEach {entity ->
+            entity.calculateFieldOfView(world)
+            entity.evaluateInputData(worldParams.worldSize)
         }
         TODO("Not implemented")
     }
@@ -110,7 +107,7 @@ class Simulation(private val worldParams: WorldParams) {
                     age = 0,
                     energy = 100,
                     hunger = 0,
-                    hornyness = 0,
+                    sexualDrive = 0,
                     direction = Direction.values()[randomDataProvider.getRandomInteger(7)]
                 )
             )
@@ -153,18 +150,6 @@ class Simulation(private val worldParams: WorldParams) {
         if (numberOfFoodLeftToPlaceInEnd > 0) placeFood(numberOfFoodLeftToPlaceInEnd)
     }
 
-    private fun evaluateInputData(gene: Gene, entity: Entity) {
-        // Do not evaluate useless genes that can't possibly result in action
-        // (when one of neurons is logical and other is numerical)
-        with(gene) {
-            if (
-                (input is LogicalNeuron && output is LogicalNeuron) ||
-                (input is NumericalNeuron && output is NumericalNeuron)
-            ) {
-                input.evaluate(entity.coordinates, entity.direction, worldParams.worldSize)
-            }
-        }
-    }
     /**
      * Returns a random coordinate in the World that is not currently occupied by any entity
      *

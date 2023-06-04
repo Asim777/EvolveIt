@@ -1,4 +1,4 @@
-package data.neuron.sensor.end_of_world
+package data.neuron.sensor.entity
 
 import data.Cell
 import data.Coordinates
@@ -6,10 +6,10 @@ import data.Direction
 import data.neuron.LogicalNeuron
 import data.neuron.NeuronCategory
 
-class EndOfWorldRight(
+class EntityFront(
     override var value: Boolean = false,
-    id: String = "EoWr",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
+    id: String = "Ef",
+    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
 ) : LogicalNeuron(value, id, category) {
     override fun evaluate(
         coordinates: Coordinates,
@@ -18,10 +18,7 @@ class EndOfWorldRight(
         world:  HashMap<Int, HashMap<Int, Cell>>?
     ): Boolean {
         value = when (direction) {
-            Direction.North -> coordinates.x + 5 < worldSize
-            Direction.East -> coordinates.y + 5 < worldSize
-            Direction.South -> coordinates.x - 5 < 0
-            Direction.West -> coordinates.y - 5 < 0
+            coordinates.getFront().any { it.hasEntity }
         }
         return value
     }

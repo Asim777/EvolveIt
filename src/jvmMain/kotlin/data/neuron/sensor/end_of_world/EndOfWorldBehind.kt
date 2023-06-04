@@ -1,5 +1,6 @@
 package data.neuron.sensor.end_of_world
 
+import data.Cell
 import data.Coordinates
 import data.Direction
 import data.neuron.LogicalNeuron
@@ -10,7 +11,12 @@ class EndOfWorldBehind(
     id: String = "EoWb",
     category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.EndOfWorld)
 ) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
+    override fun evaluate(
+        coordinates: Coordinates,
+        direction: Direction,
+        worldSize: Int,
+        world:  HashMap<Int, HashMap<Int, Cell>>?
+    ): Boolean {
         value = when (direction) {
             Direction.North -> coordinates.y + 5 < worldSize
             Direction.East -> coordinates.x - 5 < 0
