@@ -1,9 +1,6 @@
 package data.neuron
 
-import data.Cell
-import data.Coordinates
-import data.Direction
-import data.NumberOfNeurons
+import data.*
 import data.neuron.sensor.end_of_world.EndOfWorldBehind
 import data.neuron.sensor.end_of_world.EndOfWorldFront
 import data.neuron.sensor.end_of_world.EndOfWorldLeft
@@ -15,12 +12,7 @@ sealed interface Neuron {
     val id: String
     val category: NeuronCategory
 
-    fun evaluate(
-        coordinates: Coordinates,
-        direction: Direction,
-        worldSize: Int,
-        world: HashMap<Int, HashMap<Int, Cell>>? = null
-    ): Boolean
+    fun evaluate(entity: Entity, worldSize: Int): Boolean
 }
 
 sealed class NeuronCategory {
@@ -54,39 +46,6 @@ abstract class NumericalNeuron(
 ) : Neuron
 
 // SENSOR
-
-// Entity sensory logical neurons
-
-class EntityLeft(
-    override var value: Boolean = false,
-    id: String = "El",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
-        TODO()
-    }
-}
-
-class EntityRight(
-    override var value: Boolean = false,
-    id: String = "Er",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
-        TODO()
-    }
-}
-
-class EntityBehind(
-    override var value: Boolean = false,
-    id: String = "Eb",
-    category: NeuronCategory = NeuronCategory.Sensor(subCategory = NeuronCategory.SensorSubcategory.Entity)
-) : LogicalNeuron(value, id, category) {
-    override fun evaluate(coordinates: Coordinates, direction: Direction, worldSize: Int): Boolean {
-        TODO()
-    }
-}
-
 // Food sensory logical neurons
 class FoodAhead(
     override var value: Boolean = false,

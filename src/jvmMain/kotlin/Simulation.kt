@@ -104,11 +104,12 @@ class Simulation(private val worldParams: WorldParams) {
                     genome = genome,
                     color = genome.generateColor(),
                     coordinates = coord,
+                    direction = Direction.values()[randomDataProvider.getRandomInteger(7)],
+                    fieldOfView = FieldOfView(),
                     age = 0,
                     energy = 100,
                     hunger = 0,
-                    sexualDrive = 0,
-                    direction = Direction.values()[randomDataProvider.getRandomInteger(7)]
+                    sexualDrive = 0
                 )
             )
             // Update world with new entity cell coordinate

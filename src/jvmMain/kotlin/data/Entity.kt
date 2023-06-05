@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import data.neuron.LogicalNeuron
 import data.neuron.NumericalNeuron
 
-class Entity(
+data class Entity(
     val id: Int,
     val genome: Array<Gene>,
     val color: Color,
@@ -17,39 +17,124 @@ class Entity(
     //var thirst: Int,
     var sexualDrive: Int,
     //var sleepiness: Int
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Entity
+
+        if (id != other.id) return false
+        if (!genome.contentEquals(other.genome)) return false
+        if (color != other.color) return false
+        if (coordinates != other.coordinates) return false
+        if (direction != other.direction) return false
+        if (fieldOfView != other.fieldOfView) return false
+        if (age != other.age) return false
+        if (energy != other.energy) return false
+        if (hunger != other.hunger) return false
+        return sexualDrive == other.sexualDrive
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + genome.contentHashCode()
+        result = 31 * result + color.hashCode()
+        result = 31 * result + coordinates.hashCode()
+        result = 31 * result + direction.hashCode()
+        result = 31 * result + fieldOfView.hashCode()
+        result = 31 * result + age
+        result = 31 * result + energy
+        result = 31 * result + hunger
+        result = 31 * result + sexualDrive
+        return result
+    }
+
+    // Get relative coordinates
+    // TODO: Write tests for methods in this block
+
+
+    //TODO: Write JavaDoc
+    // TODO: Write tests for method
+    fun calculateFieldOfView(world: HashMap<Int, HashMap<Int, Cell>>) {
+        val worldSize = world.size
+        fun Coordinates.getCell() = world[this.x]?.get(this.y)
+
+        with(fieldOfView) {
+            f1 = coordinates.getFrontCoord(1, direction, worldSize)?.getCell()
+            fr = coordinates.getFrontRightCoord(1, direction, worldSize)?.getCell()
+            r = coordinates.getRightCoord(1, direction, worldSize)?.getCell()
+            br = coordinates.getBackRightCoord(direction, worldSize)?.getCell()
+            b = coordinates.getBackCoord(direction, worldSize)?.getCell()
+            bl = coordinates.getBackLeftCoord(direction, worldSize)?.getCell()
+            l = coordinates.getLeftCoord(1, direction, worldSize)?.getCell()
+            fl = coordinates.getFrontLeftCoord(1, direction, worldSize)?.getCell()
+            f2 = coordinates.getFrontCoord(2, direction, worldSize)?.getCell()
+            f1r2 = f2?.coordinates?.getRightCoord(1, direction, worldSize)?.getCell()
+            f1l2 = f2?.coordinates?.getLeftCoord(1, direction, worldSize)?.getCell()
+            fr2 = coordinates.getFrontRightCoord(2, direction, worldSize)?.getCell()
+            fl2 = coordinates.getFrontLeftCoord(2, direction, worldSize)?.getCell()
+            f3 = coordinates.getFrontCoord(3, direction, worldSize)?.getCell()
+            f2r3 = f3?.coordinates?.getRightCoord(1, direction, worldSize)?.getCell()
+            f2l3 = f3?.coordinates?.getLeftCoord(1, direction, worldSize)?.getCell()
+            f1r3 = f3?.coordinates?.getRightCoord(2, direction, worldSize)?.getCell()
+            f1l3 = f3?.coordinates?.getLeftCoord(2, direction, worldSize)?.getCell()
+            fr3 = coordinates.getFrontRightCoord(3, direction, worldSize)?.getCell()
+            fl3 = coordinates.getFrontLeftCoord(3, direction, worldSize)?.getCell()
+            f4 = coordinates.getFrontCoord(4, direction, worldSize)?.getCell()
+            f3r4 = f3?.coordinates?.getRightCoord(1, direction, worldSize)?.getCell()
+            f3l4 = f3?.coordinates?.getLeftCoord(1, direction, worldSize)?.getCell()
+            f2r4 = f3?.coordinates?.getRightCoord(2, direction, worldSize)?.getCell()
+            f2l4 = f3?.coordinates?.getLeftCoord(2, direction, worldSize)?.getCell()
+            f1r4 = f3?.coordinates?.getRightCoord(3, direction, worldSize)?.getCell()
+            f1l4 = f3?.coordinates?.getLeftCoord(3, direction, worldSize)?.getCell()
+            fr4 = coordinates.getFrontRightCoord(4, direction, worldSize)?.getCell()
+            fl4 = coordinates.getFrontLeftCoord(4, direction, worldSize)?.getCell()
+        }
+    }
+}
 
 data class FieldOfView(
-    var f1: Cell?,
-    var fr: Cell?,
-    var r: Cell?,
-    var br: Cell?,
-    var b: Cell?,
-    var bl: Cell?,
-    var l: Cell?,
-    var fl: Cell?,
-    var f2: Cell?,
-    var f1r2: Cell?,
-    var f1l2: Cell?,
-    var fr2: Cell?,
-    var fl2: Cell?,
-    var f3: Cell?,
-    var f2r3: Cell?,
-    var f2l3: Cell?,
-    var f1r3: Cell?,
-    var f1l3: Cell?,
-    var fr3: Cell?,
-    var fl3: Cell?,
-    var f4: Cell?,
-    var f3r4: Cell?,
-    var f3l4: Cell?,
-    var f2r4: Cell?,
-    var f2l4: Cell?,
-    var f1r4: Cell?,
-    var f1l4: Cell?,
-    var fr4: Cell?,
-    var fl4: Cell?
+    var f1: Cell? = null,
+    var fr: Cell? = null,
+    var r: Cell? = null,
+    var br: Cell? = null,
+    var b: Cell? = null,
+    var bl: Cell? = null,
+    var l: Cell? = null,
+    var fl: Cell? = null,
+    var f2: Cell? = null,
+    var f1r2: Cell? = null,
+    var f1l2: Cell? = null,
+    var fr2: Cell? = null,
+    var fl2: Cell? = null,
+    var f3: Cell? = null,
+    var f2r3: Cell? = null,
+    var f2l3: Cell? = null,
+    var f1r3: Cell? = null,
+    var f1l3: Cell? = null,
+    var fr3: Cell? = null,
+    var fl3: Cell? = null,
+    var f4: Cell? = null,
+    var f3r4: Cell? = null,
+    var f3l4: Cell? = null,
+    var f2r4: Cell? = null,
+    var f2l4: Cell? = null,
+    var f1r4: Cell? = null,
+    var f1l4: Cell? = null,
+    var fr4: Cell? = null,
+    var fl4: Cell? = null
 )
+
+fun FieldOfView.getFront() = listOf(f1, f2, f3, f4)
+fun FieldOfView.getBehind() = listOf(bl, b, br)
+fun FieldOfView.getAhead() = listOf(
+    fl, f1, fr, fl2, f1l2, f2, f1r2, fr2, fl3, f1l3, f2l3, f3, f2r3, f1r3, fr3, fl4, f1l4, f2l4, f3l4, f4, f3r4,
+    f2r4, f1r4, fr4
+)
+
+fun FieldOfView.getRight() = listOf(br, r, fr, f1r2, fr2, f2r3, f1r3, fr3, f3r4, f2r4, f1r4, fr4)
+fun FieldOfView.getLeft() = listOf(bl, l, fl, f1l2, fl2, f2l3, f1l3, fl3, f3l4, f2l4, f1l4, fl4)
 
 enum class Direction {
     North,
@@ -66,152 +151,8 @@ fun Entity.evaluateInputData(worldSize: Int) {
                 (input is LogicalNeuron && output is LogicalNeuron) or
                 (input is NumericalNeuron && output is NumericalNeuron)
             ) {
-                input.evaluate(coordinates, direction, worldSize)
+                input.evaluate(this@evaluateInputData, worldSize)
             }
         }
-    }
-}
-
-fun Entity.calculateFieldOfView(world: HashMap<Int, HashMap<Int, Cell>>) {
-
-    fun Coordinates.getCell() = world[this.x]?.get(this.y)
-
-    // Get geographic location
-    fun Coordinates.getNorth(step: Int) =
-        if (y > step - 1) {
-            copy(y = y - step).getCell()
-        } else null
-
-    fun Coordinates.getNorthEast(step: Int) =
-        if (x < world.size - step && y > step - 1) {
-            copy(x = x + step, y = y - step).getCell()
-        } else null
-
-    fun Coordinates.getNorthWest(step: Int) =
-        if (x > step - 1 && y > step - 1) {
-            copy(x = x - step, y = y - step).getCell()
-        } else null
-
-    fun Coordinates.getEast(step: Int) =
-        if (x < world.size - step) {
-            copy(x = x + step).getCell()
-        } else null
-
-    fun Coordinates.getSouth(step: Int) =
-        if (y < world.size - step) {
-            copy(y = y + step).getCell()
-        } else null
-
-    fun Coordinates.getSouthEast(step: Int) =
-        if (x < world.size - step && y < world.size - step) {
-            copy(x = x + step, y = y + step).getCell()
-        } else null
-
-    fun Coordinates.getSouthWest(step: Int) =
-        if (x > step - 1 && y < world.size - step) {
-            copy(x = x - step, y = y + step).getCell()
-        } else null
-
-    fun Coordinates.getWest(step: Int) =
-        if (x > step - 1) {
-            copy(x = x - step).getCell()
-        } else null
-
-
-    // Get relative location
-    fun Coordinates.getFront(step: Int) =
-        when (direction) {
-            Direction.North -> getNorth(step)
-            Direction.East -> getEast(step)
-            Direction.South -> getSouth(step)
-            Direction.West -> getWest(step)
-        }
-
-    fun Coordinates.getFrontRight(step: Int) =
-        when (direction) {
-            Direction.North -> getNorthEast(step)
-            Direction.East -> getSouthEast(step)
-            Direction.South -> getSouthWest(step)
-            Direction.West -> getNorthWest(step)
-        }
-
-    fun Coordinates.getRight(step: Int) =
-        when (direction) {
-            Direction.North -> getEast(step)
-            Direction.East -> getSouth(step)
-            Direction.South -> getWest(step)
-            Direction.West -> getNorth(step)
-        }
-
-    fun Coordinates.getBackRight(step: Int) =
-        when (direction) {
-            Direction.North -> getSouthEast(step)
-            Direction.East -> getSouthWest(step)
-            Direction.South -> getNorthWest(step)
-            Direction.West -> getNorthEast(step)
-        }
-
-    fun Coordinates.getBack(step: Int) =
-        when (direction) {
-            Direction.North -> getSouth(step)
-            Direction.East -> getWest(step)
-            Direction.South -> getNorth(step)
-            Direction.West -> getEast(step)
-        }
-
-    fun Coordinates.getBackLeft(step: Int) =
-        when (direction) {
-            Direction.North -> getSouthWest(step)
-            Direction.East -> getNorthWest(step)
-            Direction.South -> getNorthEast(step)
-            Direction.West -> getSouthEast(step)
-        }
-
-    fun Coordinates.getLeft(step: Int) =
-        when (direction) {
-            Direction.North -> getWest(step)
-            Direction.East -> getNorth(step)
-            Direction.South -> getEast(step)
-            Direction.West -> getSouth(step)
-        }
-
-    fun Coordinates.getFrontLeft(step: Int) =
-        when (direction) {
-            Direction.North -> getNorthWest(step)
-            Direction.East -> getNorthEast(step)
-            Direction.South -> getSouthEast(step)
-            Direction.West -> getSouthWest(step)
-        }
-
-    with(fieldOfView) {
-        f1 = coordinates.getFront(1)
-        fr = coordinates.getFrontRight(1)
-        r = coordinates.getRight(1)
-        br = coordinates.getBackRight(1)
-        b = coordinates.getBack(1)
-        bl = coordinates.getBackLeft(1)
-        l = coordinates.getLeft(1)
-        fl = coordinates.getFrontLeft(1)
-        f2 = coordinates.getFront(2)
-        f1r2 = coordinates.getFront(2)?.coordinates?.getRight(1)
-        f1l2 = coordinates.getFront(2)?.coordinates?.getLeft(1)
-        fr2 = coordinates.getFrontRight(2)
-        fl2 = coordinates.getFrontLeft(2)
-        f3 = coordinates.getFront(3)
-        f2r3 = coordinates.getFront(3)?.coordinates?.getRight(1)
-        f2l3 = coordinates.getFront(3)?.coordinates?.getLeft(1)
-        f1r3 = coordinates.getFront(3)?.coordinates?.getRight(2)
-        f1l3 = coordinates.getFront(3)?.coordinates?.getLeft(2)
-        fr3 = coordinates.getFrontRight(3)
-        fl3 = coordinates.getFrontLeft(3)
-        f4 = coordinates.getFront(4)
-        f3r4 = coordinates.getFront(4)?.coordinates?.getRight(1)
-        f3l4 = coordinates.getFront(4)?.coordinates?.getLeft(1)
-        f2r4 = coordinates.getFront(4)?.coordinates?.getRight(2)
-        f2l4 = coordinates.getFront(4)?.coordinates?.getLeft(2)
-        f1r4 = coordinates.getFront(4)?.coordinates?.getRight(3)
-        f1l4 = coordinates.getFront(4)?.coordinates?.getLeft(3)
-        fr4 = coordinates.getFrontRight(4)
-        fl4 = coordinates.getFrontLeft(4)
     }
 }
